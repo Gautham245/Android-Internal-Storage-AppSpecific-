@@ -10,7 +10,7 @@ import com.example.internalstorageandroid.databinding.ImageCardBinding
 import com.example.internalstorageandroid.model.InternalSotorageImage
 import com.example.internalstorageandroid.ui.ImageOnClick
 
-class ImageAdapter (val imageOnClick: ImageOnClick): ListAdapter<InternalSotorageImage, ImageAdapter.PhotoViewHolder>(ImageCardCallBack()){
+class ImageAdapter (val imageOnClick: (InternalSotorageImage)-> Unit): ListAdapter<InternalSotorageImage, ImageAdapter.PhotoViewHolder>(ImageCardCallBack()){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
         val inflater=LayoutInflater.from(parent.context)
@@ -22,10 +22,11 @@ class ImageAdapter (val imageOnClick: ImageOnClick): ListAdapter<InternalSotorag
         val photo=getItem(position)
         holder.binding.apply {
             image.setImageBitmap(photo.bitmap)
+            image.setOnClickListener {
+                imageOnClick(photo)
+            }
         }
-        holder.binding.image.setOnClickListener {
-            imageOnClick.getImagePosition(position)
-        }
+
 
     }
 

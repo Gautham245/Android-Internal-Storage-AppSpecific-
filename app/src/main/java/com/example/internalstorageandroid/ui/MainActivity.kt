@@ -23,7 +23,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class MainActivity : AppCompatActivity(),ImageOnClick {
+class MainActivity : AppCompatActivity() {
 
     lateinit var activityMainBinding:ActivityMainBinding
     lateinit var imageAdapter: ImageAdapter
@@ -34,7 +34,22 @@ class MainActivity : AppCompatActivity(),ImageOnClick {
         activityMainBinding=ActivityMainBinding.inflate(layoutInflater)
         setContentView(activityMainBinding.root)
 
-        imageAdapter=ImageAdapter(this)
+        imageAdapter=ImageAdapter(){ photo->
+            MaterialAlertDialogBuilder(this )
+                .setTitle("Alert Dialog")
+                .setMessage("Do want to delete")
+                .setNegativeButton("Delete"){dialog,where->
+                    lifecycleScope.launch {
+                        deletefromInternalStorage(photo.name)
+                        loadImagesIntoRecycyclerView()
+                        dialog.dismiss()
+                    }
+                }
+                .setNeutralButton("Cancel"){dialog,where->
+                    dialog.dismiss()
+                }
+                .show()
+        }
 
         val takePicture= registerForActivityResult(ActivityResultContracts.TakePicturePreview()){
             bitmap->
@@ -104,21 +119,5 @@ class MainActivity : AppCompatActivity(),ImageOnClick {
         }
     }
 
-    override fun getImagePosition(position: Int) {
-        MaterialAlertDialogBuilder(this )
-            .setTitle("Alert Dialog")
-            .setMessage("Do want to delete")
-            .setNegativeButton("Delete"){dialog,where->
-                lifecycleScope.launch {
-                    deletefromInternalStorage(loadImagesFromInternalStorage().get(position).name)
-                    loadImagesIntoRecycyclerView()
-                    dialog.dismiss()
-                }
-            }
-            .setNeutralButton("Cancel"){dialog,where->
-                dialog.dismiss()
-            }
-            .show()
-    }
 
 }
